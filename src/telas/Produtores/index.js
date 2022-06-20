@@ -5,17 +5,39 @@ import Produtor from './componentes/Produtor';
 import Topo from './componentes/Topo';
 import useProdutores from '../../hooks/useProdutores';
 import useTextos from '../../hooks/useTextos';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 export default function Produtores({melhoresProdutores}) {
   const navigation = useNavigation();
   const lista = useProdutores(melhoresProdutores);
-  const {tituloProdutores} = useTextos();
+  const {tituloProdutores, mensagemCompra} = useTextos();
+  const route = useRoute();
+  const [exibirMensagem, setExibirMensagem] = useState(false);
+
+  const timestampCompra = route.params?.compra.timestamp
+  console.log(timestampCompra)
+  const nomeCompra = route.params?.compra.nome
+  const mensagemCompraCompleta = mensagemCompra?.replace('$NOME', nomeCompra);
+
+  useEffect(()=> {
+    setExibirMensagem(!!nomeCompra);
+    let timeout;
+
+    if(nomeCompra) {
+      
+      timeout = setTimeout(() => setExibirMensagem(false), 1000);
+    }
+
+    return () => { clearTimeout(timeout)}
+  },[timestampCompra])
 
   const TopoLista = () => {
     return (
       <>
         <Topo melhoresProdutores={melhoresProdutores} />
+        {!!nomeCompra && <Text style={estilos.compra}>{mensagemCompraCompleta}</Text>}
         <Text style={estilos.titulo}>{tituloProdutores}</Text>
       </>
     );
@@ -51,4 +73,11 @@ const estilos = StyleSheet.create({
     fontWeight: 'bold',
     color: '#464646',
   },
+  compra: {
+    backgroundColor: '#EAF5F3',
+    padding: 16,
+    fontSize: 16,
+    color: '#464646',
+    lineHeight: 26,
+  }
 });

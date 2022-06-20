@@ -1,3 +1,4 @@
+import { useRoute } from '@react-navigation/native';
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 
@@ -8,8 +9,10 @@ import useTextos from '../../hooks/useTextos';
 import Detalhes from './componentes/Detalhes';
 import Item from './componentes/Item';
 
-export default function Cesta({ detalhes, itens, produtor }) {
+export default function Cesta() {
   const { topoCesta, tituloItens } = useTextos();
+  const route = useRoute();
+  const { detalhes, itens, produtor } = route.params;
 
   return <>
     <FlatList
